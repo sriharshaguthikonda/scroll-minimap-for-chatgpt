@@ -115,8 +115,17 @@ a {
 
     }
   }
+  & > .domains {
+    padding: 0.5rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    & > textarea {
+      width: 100%;
+      resize: vertical;
+    }
+  }
 }
 
 summary {
-  cursor: pointer;
-}
+  cursor: pointer;}

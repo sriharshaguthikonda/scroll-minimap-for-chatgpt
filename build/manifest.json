@@ -2,12 +2,15 @@
     "manifest_version": 3,
     "name": "Chat GPT Scroll Map",
     "version": "1.5.2",
-    "description": "A minimap for scrolling through chat gpt messages, similar to the one in VS Code",
+    "description": "A minimap for scrolling through webpages, similar to the one in VS Code",
     "icons": {
         "128": "assets/logo.png"
     },
     "permissions": [
         "storage"
+    ],
+    "host_permissions": [
+        "<all_urls>"
     ],
     "action": {
         "default_popup": "popup/popup.html"
@@ -15,7 +18,7 @@
     "content_scripts": [
         {
             "matches": [
-                "https://chatgpt.com/*"
+                "<all_urls>"
             ],
             "js": [
                 "content/content.js"
@@ -28,7 +31,6 @@
     "web_accessible_resources": [
         {
           "resources": ["assets/logo.png"],
-          "matches": ["https://chatgpt.com/*"]
+          "matches": ["<all_urls>"]
         }
-    ]
-}
+    ]}

@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react'
 
 function App() {
   const [showButton, setShowButton] = useState(true)
+  const [domains, setDomains] = useState("chatgpt.com")
 
   function toggleShowButton(newValue: boolean) {
     setShowButton(newValue)
@@ -23,17 +24,20 @@ function App() {
 
 
   useEffect(() => {
-    chrome.storage.local.get("showButton", (result) => {
+    chrome.storage.local.get(["showButton", "enabledDomains"], (result) => {
       if (result.showButton !== undefined) {
         setShowButton(result.showButton);
+      }
+      if (result.enabledDomains !== undefined) {
+        setDomains(result.enabledDomains);
       }
     });
   }, []);
 
 
   useEffect(() => {
-    chrome.storage.local.set({ showButton: showButton });
-  }, [showButton]);
+    chrome.storage.local.set({ showButton: showButton, enabledDomains: domains });
+  }, [showButton, domains]);
 
 
   return (
@@ -93,6 +97,14 @@ function App() {
           // onChange={(e) => setShowButton(e.target.checked)}
           />
 
+        </div>
+        <div className={styles.domains}>
+          <label>Enabled domains (comma or newline separated, * for all)</label>
+          <textarea
+            value={domains}
+            onChange={(e) => setDomains(e.target.value)}
+            rows={3}
+          />
         </div>
       </div>
       <div className={styles.footer}>

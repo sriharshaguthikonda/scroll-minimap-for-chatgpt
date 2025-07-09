@@ -14,9 +14,9 @@ I made this extension because I kept getting lost during my conversations with c
 
 2. Restart chrome
 
-3. Go to chatgpt, you should see a toggle button for the minimap in the top right corner. Open the minimap by pressing this button.
+3. By default the minimap is enabled on `chatgpt.com`. Open the extension popup to add domains or use `*` to enable it everywhere.
 
-4. Ask chatgpt a message and hit refresh minimap. A condensed view of the conversation should be shown in the minimap.
+4. Navigate to a supported site and you should see a toggle button for the minimap in the top right corner. Ask chatgpt or other sites a message and hit refresh minimap if required.
 
 
 ## Performace improvement
