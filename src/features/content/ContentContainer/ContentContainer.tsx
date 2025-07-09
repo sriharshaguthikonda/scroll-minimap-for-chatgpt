@@ -10,6 +10,9 @@ export default function ContentContainer() {
   const [currentUrl, setCurrentUrl] = useState<string>("")
   const [currentScrollContainer, setCurrentScrollContainer] = useState<HTMLElement|null>(null)
   const [showButton, setShowButton] = useState<boolean>(true)
+  const [isSiteEnabled, setIsSiteEnabled] = useState<boolean>(false)
+
+  const isChatGPT = location.hostname.includes("chatgpt.com") || location.hostname.includes("chat.openai.com")
 
   // functions
   function updateCurrentUrl() {
@@ -21,6 +24,12 @@ export default function ContentContainer() {
   }
 
   async function searchForChat(): Promise<null> {
+    const isChatGPT = location.hostname.includes("chatgpt.com") || location.hostname.includes("chat.openai.com")
+    if (!isChatGPT) {
+      setCurrentScrollContainer(document.documentElement)
+      return null
+    }
+
     await delay(500)
     for (let i =0; i<10; i++) {
       const chat = queryChatContainer()
@@ -43,19 +52,33 @@ export default function ContentContainer() {
         setShowButton(result.showButton);
       }
     });
+    chrome.storage.local.get("enabledSites", (result) => {
+      const host = location.hostname.replace(/^www\./, "")
+      const sites = result.enabledSites || ["chatgpt.com"]
+      if (!result.enabledSites) {
+        chrome.storage.local.set({ enabledSites: sites })
+      }
+      setIsSiteEnabled(sites.includes(host))
+    })
   }, [])
 
   // On current url change
   useEffect(() => {
-    // console.log("current url", currentUrl.slice(-2))
     searchForChat()
+    chrome.storage.local.get("enabledSites", (result) => {
+      const host = location.hostname.replace(/^www\./, "")
+      const sites = result.enabledSites || ["chatgpt.com"]
+      setIsSiteEnabled(sites.includes(host))
+    })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUrl])
 
   return (
- 
+
       <div className={styles.appContainer}>
-        {showButton && <Minimap elementToMap={currentScrollContainer}/>}
+        {showButton && isSiteEnabled && (
+          <Minimap elementToMap={currentScrollContainer} isFullHtml={!isChatGPT} />
+        )}
       </div>
 
   );

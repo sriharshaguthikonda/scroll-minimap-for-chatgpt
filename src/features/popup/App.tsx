@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react'
 
 function App() {
   const [showButton, setShowButton] = useState(true)
+  const [siteEnabled, setSiteEnabled] = useState(true)
 
   function toggleShowButton(newValue: boolean) {
     setShowButton(newValue)
@@ -21,6 +22,28 @@ function App() {
 
   }
 
+  function toggleSiteEnabled(newValue: boolean) {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      const currentTabID = tabs[0].id
+      const url = tabs[0].url ? new URL(tabs[0].url) : null
+      if (!url) return
+      const host = url.hostname.replace(/^www\./, "")
+      chrome.storage.local.get("enabledSites", (result) => {
+        const sites: string[] = result.enabledSites || ["chatgpt.com"]
+        let updated = sites
+        if (newValue) {
+          if (!sites.includes(host)) updated = [...sites, host]
+        } else {
+          updated = sites.filter((s) => s !== host)
+        }
+        chrome.storage.local.set({ enabledSites: updated }, () => {
+          setSiteEnabled(newValue)
+          if (currentTabID) chrome.tabs.reload(currentTabID)
+        })
+      })
+    })
+  }
+
 
   useEffect(() => {
     chrome.storage.local.get("showButton", (result) => {
@@ -28,6 +51,18 @@ function App() {
         setShowButton(result.showButton);
       }
     });
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      const url = tabs[0].url ? new URL(tabs[0].url) : null
+      if (!url) return
+      const host = url.hostname.replace(/^www\./, "")
+      chrome.storage.local.get("enabledSites", (result) => {
+        const sites: string[] = result.enabledSites || ["chatgpt.com"]
+        if (!result.enabledSites) {
+          chrome.storage.local.set({ enabledSites: sites })
+        }
+        setSiteEnabled(sites.includes(host))
+      })
+    })
   }, []);
 
 
@@ -46,12 +81,7 @@ function App() {
       <div className={styles.body}>
 
         <div>
-          This extension only works for <a
-            href="https://www.chatgpt.com"
-            target="_blank"
-          >
-            chatgpt.com
-          </a>
+          Enable the minimap on any website using the toggle below.
         </div>
 
         <div className={styles.demo}>
@@ -91,6 +121,20 @@ function App() {
             type="checkbox"
             checked={!showButton}
           // onChange={(e) => setShowButton(e.target.checked)}
+          />
+
+        </div>
+        <div
+          className={styles.checkbox}
+          onClick={() => toggleSiteEnabled(!siteEnabled)}
+        >
+          <label>
+            Enable on this site
+          </label>
+
+          <input
+            type="checkbox"
+            checked={siteEnabled}
           />
 
         </div>
