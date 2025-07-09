@@ -115,8 +115,14 @@ a {
 
     }
   }
+  & textarea {
+    width: 100%;
+    margin-top: 0.5rem;
+    background-color: var(--background);
+    color: var(--text-color);
+    border: solid 1px var(--border-color);
+  }
 }
 
 summary {
-  cursor: pointer;
-}
+  cursor: pointer;}

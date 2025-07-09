@@ -4,5 +4,5 @@ export const DEFAULT_OPTIONS: ExtensionOptions = {
     keepOpen: false,
     smoothScrolling: true,
     autoRefresh: false,
-    refreshPeriod: 10
-}
+    refreshPeriod: 10,
+    allowedHosts: ["*"]}

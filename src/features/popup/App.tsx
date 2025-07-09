@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react'
 
 function App() {
   const [showButton, setShowButton] = useState(true)
+  const [allowedHostsInput, setAllowedHostsInput] = useState("*")
 
   function toggleShowButton(newValue: boolean) {
     setShowButton(newValue)
@@ -23,9 +24,12 @@ function App() {
 
 
   useEffect(() => {
-    chrome.storage.local.get("showButton", (result) => {
+    chrome.storage.local.get(["showButton", "allowedHosts"], (result) => {
       if (result.showButton !== undefined) {
         setShowButton(result.showButton);
+      }
+      if (Array.isArray(result.allowedHosts)) {
+        setAllowedHostsInput(result.allowedHosts.join("\n"))
       }
     });
   }, []);
@@ -34,6 +38,11 @@ function App() {
   useEffect(() => {
     chrome.storage.local.set({ showButton: showButton });
   }, [showButton]);
+
+  useEffect(() => {
+    const hosts = allowedHostsInput.split(/\n+/).map(s => s.trim()).filter(Boolean)
+    chrome.storage.local.set({ allowedHosts: hosts })
+  }, [allowedHostsInput])
 
 
   return (
@@ -46,12 +55,7 @@ function App() {
       <div className={styles.body}>
 
         <div>
-          This extension only works for <a
-            href="https://www.chatgpt.com"
-            target="_blank"
-          >
-            chatgpt.com
-          </a>
+          Specify the websites where the minimap should appear below.
         </div>
 
         <div className={styles.demo}>
@@ -93,6 +97,16 @@ function App() {
           // onChange={(e) => setShowButton(e.target.checked)}
           />
 
+        </div>
+        <div className={styles.checkbox}>
+          <label>
+            Allowed websites
+          </label>
+          <textarea
+            className={styles.textarea}
+            value={allowedHostsInput}
+            onChange={(e) => setAllowedHostsInput(e.target.value)}
+          />
         </div>
       </div>
       <div className={styles.footer}>

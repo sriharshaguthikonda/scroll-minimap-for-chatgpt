@@ -10,6 +10,8 @@ export default function ContentContainer() {
   const [currentUrl, setCurrentUrl] = useState<string>("")
   const [currentScrollContainer, setCurrentScrollContainer] = useState<HTMLElement|null>(null)
   const [showButton, setShowButton] = useState<boolean>(true)
+  const [siteAllowed, setSiteAllowed] = useState<boolean>(true)
+  const [isFullHtml, setIsFullHtml] = useState<boolean>(false)
 
   // functions
   function updateCurrentUrl() {
@@ -26,11 +28,13 @@ export default function ContentContainer() {
       const chat = queryChatContainer()
       if (chat) {
           setCurrentScrollContainer(chat.parentElement)
+          setIsFullHtml(false)
           return null
       }
       await delay(300)
     }
-    setCurrentScrollContainer(null)
+    setCurrentScrollContainer(document.documentElement)
+    setIsFullHtml(true)
     return null
 }
 
@@ -38,24 +42,31 @@ export default function ContentContainer() {
   useEffect(() => {
     const urlObserver = new MutationObserver(updateCurrentUrl)
     urlObserver.observe(document, {childList: true, subtree: true})
-    chrome.storage.local.get("showButton", (result) => {
+    chrome.storage.local.get(["showButton", "allowedHosts"], (result) => {
       if (result.showButton !== undefined) {
         setShowButton(result.showButton);
       }
+      const hosts = Array.isArray(result.allowedHosts) ? result.allowedHosts as string[] : ["*"]
+      const hostname = location.hostname
+      const allowed = hosts.includes("*") || hosts.some(h => hostname.includes(h))
+      setSiteAllowed(allowed)
     });
   }, [])
 
   // On current url change
   useEffect(() => {
-    // console.log("current url", currentUrl.slice(-2))
-    searchForChat()
+    if (siteAllowed) {
+      searchForChat()
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUrl])
+  }, [currentUrl, siteAllowed])
 
   return (
  
       <div className={styles.appContainer}>
-        {showButton && <Minimap elementToMap={currentScrollContainer}/>}
+        {showButton && siteAllowed && (
+          <Minimap elementToMap={currentScrollContainer} isFullHtml={isFullHtml} />
+        )}
       </div>
 
   );

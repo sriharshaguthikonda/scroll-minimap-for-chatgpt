@@ -15,7 +15,7 @@
     "content_scripts": [
         {
             "matches": [
-                "https://chatgpt.com/*"
+                "<all_urls>"
             ],
             "js": [
                 "content/content.js"
@@ -28,7 +28,6 @@
     "web_accessible_resources": [
         {
           "resources": ["assets/logo.png"],
-          "matches": ["https://chatgpt.com/*"]
+          "matches": ["<all_urls>"]
         }
-    ]
-}
+    ]}
