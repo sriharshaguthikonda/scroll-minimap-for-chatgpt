@@ -146,6 +146,9 @@ export function queryChatContainer(): HTMLElement | null {
   if (firstChatMessage) {
     chatMessageContainer = firstChatMessage.parentElement;
   }
+  if (!chatMessageContainer) {
+    chatMessageContainer = document.scrollingElement as HTMLElement;
+  }
   return chatMessageContainer;
 }
 

@@ -8,6 +8,9 @@ import { useEffect, useState } from 'react'
 
 function App() {
   const [showButton, setShowButton] = useState(true)
+  const [enableAll, setEnableAll] = useState(false)
+  const [enableSite, setEnableSite] = useState(false)
+  const [currentHost, setCurrentHost] = useState('')
 
   function toggleShowButton(newValue: boolean) {
     setShowButton(newValue)
@@ -23,17 +26,42 @@ function App() {
 
 
   useEffect(() => {
-    chrome.storage.local.get("showButton", (result) => {
-      if (result.showButton !== undefined) {
-        setShowButton(result.showButton);
-      }
-    });
-  }, []);
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      const url = tabs[0].url ? new URL(tabs[0].url) : null
+      const host = url ? url.hostname : ''
+      setCurrentHost(host)
+      chrome.storage.local.get(["showButton", "enableAll", "enabledHosts"], (result) => {
+        if (result.showButton !== undefined) {
+          setShowButton(result.showButton)
+        }
+        const hosts: string[] = result.enabledHosts || []
+        setEnableAll(!!result.enableAll)
+        setEnableSite(hosts.includes(host))
+      })
+    })
+  }, [])
 
 
   useEffect(() => {
     chrome.storage.local.set({ showButton: showButton });
   }, [showButton]);
+
+  useEffect(() => {
+    chrome.storage.local.get(["enabledHosts"], (result) => {
+      const hosts: string[] = result.enabledHosts || []
+      const index = hosts.indexOf(currentHost)
+      if (enableSite && index === -1) {
+        hosts.push(currentHost)
+      } else if (!enableSite && index !== -1) {
+        hosts.splice(index, 1)
+      }
+      chrome.storage.local.set({ enabledHosts: hosts })
+    })
+  }, [enableSite, currentHost])
+
+  useEffect(() => {
+    chrome.storage.local.set({ enableAll: enableAll })
+  }, [enableAll])
 
 
   return (
@@ -46,12 +74,7 @@ function App() {
       <div className={styles.body}>
 
         <div>
-          This extension only works for <a
-            href="https://www.chatgpt.com"
-            target="_blank"
-          >
-            chatgpt.com
-          </a>
+          Enable ScrollMap on any website. Use the options below to control where it appears.
         </div>
 
         <div className={styles.demo}>
@@ -79,6 +102,37 @@ function App() {
         {/* <h3>
           Settings
         </h3> */}
+        <div
+          className={styles.checkbox}
+          onClick={() => setEnableAll(!enableAll)}
+        >
+          <label>
+            Enable on all sites
+          </label>
+
+          <input
+            type="checkbox"
+            checked={enableAll}
+          />
+
+        </div>
+
+        {!enableAll && (
+        <div
+          className={styles.checkbox}
+          onClick={() => setEnableSite(!enableSite)}
+        >
+          <label>
+            Enable on {currentHost || 'this site'}
+          </label>
+
+          <input
+            type="checkbox"
+            checked={enableSite}
+          />
+
+        </div>
+        )}
         <div
           className={styles.checkbox}
           onClick={() => toggleShowButton(!showButton)}
