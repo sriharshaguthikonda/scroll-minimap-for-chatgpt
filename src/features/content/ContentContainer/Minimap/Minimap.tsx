@@ -86,7 +86,7 @@ const Minimap = (
   useEffect(() => {
     if (!elementToMap) return
     console.log("observers attached!")
-    const childObserver = createChildObserver(elementToMap, handleQueueRedraw)
+    const childObserver = createChildObserver(elementToMap, handleQueueRedraw, 500)
     const sizeObserver = createSizeObserver(elementToMap, handleQueueRedraw)
     return () => {
       console.log("observers disconnected!")

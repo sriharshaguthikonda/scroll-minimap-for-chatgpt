@@ -25,6 +25,9 @@ Before (1.2) | After (1.3)
 -|-
 <video src="https://github.com/user-attachments/assets/64cdde2a-daa2-4a67-88da-a4d24e76beb2.mp4"> |  <video src="https://github.com/user-attachments/assets/b6f49f82-7ea3-4e80-8644-9dae603fbf91.mp4">
 
+### 1.4 Debounced DOM observation
+The minimap now batches DOM mutations before redrawing which significantly reduces CPU usage when ChatGPT is producing long answers.
+
 
 <details>
  

@@ -58,8 +58,20 @@ export function elementObserver(
  */
 export function createChildObserver(
   elementToObserve: HTMLElement,
-  callback: CallableFunction
+  callback: CallableFunction,
+  debounceTime = 300
 ): MutationObserver {
+  let timeoutId: number | undefined
+  const debouncedCallback = () => {
+    if (timeoutId !== undefined) {
+      clearTimeout(timeoutId)
+    }
+    timeoutId = window.setTimeout(() => {
+      callback()
+      timeoutId = undefined
+    }, debounceTime)
+  }
+
   const mutationObserver = new MutationObserver(function (mutations) {
     const minimapComponent = document.querySelector("#minimap-component")
     if (!minimapComponent) return
@@ -73,8 +85,8 @@ export function createChildObserver(
         return
       }
 
-      callback()
-      console.log(mutation);
+      debouncedCallback()
+      console.log(mutation)
     });
   });
 
