@@ -25,6 +25,9 @@ Before (1.2) | After (1.3)
 -|-
 <video src="https://github.com/user-attachments/assets/64cdde2a-daa2-4a67-88da-a4d24e76beb2.mp4"> |  <video src="https://github.com/user-attachments/assets/b6f49f82-7ea3-4e80-8644-9dae603fbf91.mp4">
 
+### DOM observation improvements
+Recent updates limit mutation observation to only top level chat message elements, reducing needless processing when individual lines change.
+
 
 <details>
  
