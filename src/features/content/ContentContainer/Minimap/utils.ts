@@ -89,6 +89,38 @@ export function createChildObserver(
   return mutationObserver
 }
 
+/**
+ * Observes only top level chat messages within the provided element.
+ * This avoids monitoring every text change within the chat container.
+ *
+ * @param {HTMLElement} elementToObserve - Container element with chat messages.
+ * @param {CallableFunction} callback - Function triggered when a message is added or removed.
+ * @returns {MutationObserver} The created MutationObserver instance.
+ */
+export function createChatMessageObserver(
+  elementToObserve: HTMLElement,
+  callback: CallableFunction
+): MutationObserver {
+  const mutationObserver = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+      if (mutation.type !== 'childList') continue
+      for (const node of [
+        ...mutation.addedNodes,
+        ...mutation.removedNodes,
+      ]) {
+        if (!(node instanceof HTMLElement)) continue
+        if (node.matches('[data-message-author-role]')) {
+          callback()
+          return
+        }
+      }
+    }
+  })
+
+  mutationObserver.observe(elementToObserve, { childList: true })
+  return mutationObserver
+}
+
 
 /**
  * Creates a ResizeObserver to observe size changes on a given HTML element and executes

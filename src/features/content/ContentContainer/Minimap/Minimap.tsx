@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import styles from "./Minimap.module.css"
 import Slider from "./Slider/Slider";
 import MinimapCanvas from "./MinimapCanvas/MinimapCanvas";
-import { createChildObserver, createSizeObserver, onNextChat, onPreviousChat } from "./utils";
+import { createChatMessageObserver, createSizeObserver, onNextChat, onPreviousChat } from "./utils";
 import { BiLeftArrow, BiRefresh, BiRightArrow,  } from "react-icons/bi";
 import { VscLoading } from "react-icons/vsc";
 import { CgClose } from "react-icons/cg";
@@ -86,7 +86,7 @@ const Minimap = (
   useEffect(() => {
     if (!elementToMap) return
     console.log("observers attached!")
-    const childObserver = createChildObserver(elementToMap, handleQueueRedraw)
+    const childObserver = createChatMessageObserver(elementToMap, handleQueueRedraw)
     const sizeObserver = createSizeObserver(elementToMap, handleQueueRedraw)
     return () => {
       console.log("observers disconnected!")
