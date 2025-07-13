@@ -26,6 +26,12 @@ Before (1.2) | After (1.3)
 <video src="https://github.com/user-attachments/assets/64cdde2a-daa2-4a67-88da-a4d24e76beb2.mp4"> |  <video src="https://github.com/user-attachments/assets/b6f49f82-7ea3-4e80-8644-9dae603fbf91.mp4">
 
 
+### Reduced DOM observation
+Version 1.4 replaces the heavy `MutationObserver` logic with a lightweight polling
+approach. The extension now checks for new chat messages every couple seconds
+instead of monitoring every DOM mutation. This significantly reduces CPU usage
+while keeping the minimap up to date.
+
 <details>
  
 <summary> <h2>React learning notes</h2></summary>

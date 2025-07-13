@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import styles from "./Minimap.module.css"
 import Slider from "./Slider/Slider";
 import MinimapCanvas from "./MinimapCanvas/MinimapCanvas";
-import { createChildObserver, createSizeObserver, onNextChat, onPreviousChat } from "./utils";
+import { createSizeObserver, onNextChat, onPreviousChat } from "./utils";
+import usePollingObserver from "./usePollingObserver";
 import { BiLeftArrow, BiRefresh, BiRightArrow,  } from "react-icons/bi";
 import { VscLoading } from "react-icons/vsc";
 import { CgClose } from "react-icons/cg";
@@ -82,18 +83,19 @@ const Minimap = (
 
 
 
-  // Add observers to look for changes in elementToMap and queue a redraw
+  // Observe size changes and poll for new messages to queue redraws
   useEffect(() => {
     if (!elementToMap) return
     console.log("observers attached!")
-    const childObserver = createChildObserver(elementToMap, handleQueueRedraw)
     const sizeObserver = createSizeObserver(elementToMap, handleQueueRedraw)
     return () => {
       console.log("observers disconnected!")
-      childObserver.disconnect();
       sizeObserver.disconnect()
-    };
+    }
   }, [elementToMap])
+
+  // Poll for chat updates instead of using a MutationObserver
+  usePollingObserver(elementToMap, handleQueueRedraw, 2000)
 
 
   // Add event listeners to listen to scroll events of elementToMap
