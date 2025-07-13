@@ -145,17 +145,25 @@ export function queryChatContainer(): HTMLElement | null {
   );
   if (firstChatMessage) {
     chatMessageContainer = firstChatMessage.parentElement;
+    console.log("queryChatContainer: Found chat container using ChatGPT selector", chatMessageContainer);
     return chatMessageContainer;
   }
 
   // Fallback for other websites
   let mainContent: HTMLElement | null = null;
   mainContent = document.querySelector('main, [role="main"]');
-  if (mainContent) return mainContent;
+  if (mainContent) {
+    console.log("queryChatContainer: Found main content using <main> or [role='main'] selector", mainContent);
+    return mainContent;
+  }
 
   mainContent = document.querySelector('#content, #main');
-  if (mainContent) return mainContent;
+  if (mainContent) {
+    console.log("queryChatContainer: Found main content using #content or #main selector", mainContent);
+    return mainContent;
+  }
 
+  console.log("queryChatContainer: Falling back to document.body");
   return document.body;
 }
 

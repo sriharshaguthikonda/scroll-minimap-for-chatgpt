@@ -53,6 +53,7 @@ export default function ContentContainer() {
 
   // On initial render
   useEffect(() => {
+    console.log("ContentContainer: Initial render");
     const urlObserver = new MutationObserver(updateCurrentUrl)
     urlObserver.observe(document, {childList: true, subtree: true})
     refreshSettings()
@@ -60,11 +61,19 @@ export default function ContentContainer() {
 
   // On current url change
   useEffect(() => {
-    // console.log("current url", currentUrl.slice(-2))
+    console.log("ContentContainer: URL changed to", currentUrl);
     refreshSettings()
     searchForChat()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUrl])
+
+  useEffect(() => {
+    console.log("ContentContainer: enabled changed to", enabled);
+  }, [enabled])
+
+  useEffect(() => {
+    console.log("ContentContainer: currentScrollContainer changed to", currentScrollContainer);
+  }, [currentScrollContainer])
 
   return (
  

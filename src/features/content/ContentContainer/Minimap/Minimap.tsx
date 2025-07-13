@@ -92,16 +92,21 @@ const Minimap = (
 
   // Add observers to look for changes in elementToMap and queue a redraw
   useEffect(() => {
+    console.log("Minimap: elementToMap changed to", elementToMap);
     if (!elementToMap) return
-    console.log("observers attached!")
+    console.log("Minimap: observers attached!")
     const childObserver = createChildObserver(elementToMap, handleQueueRedraw)
     const sizeObserver = createSizeObserver(elementToMap, handleQueueRedraw)
     return () => {
-      console.log("observers disconnected!")
+      console.log("Minimap: observers disconnected!")
       childObserver.disconnect();
       sizeObserver.disconnect()
     };
   }, [elementToMap])
+
+  useEffect(() => {
+    console.log("Minimap: queueRedraw changed to", queueRedraw);
+  }, [queueRedraw])
 
 
   // Add event listeners to listen to scroll events of elementToMap

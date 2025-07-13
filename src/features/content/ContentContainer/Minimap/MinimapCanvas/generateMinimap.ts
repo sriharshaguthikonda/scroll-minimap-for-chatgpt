@@ -29,8 +29,10 @@ export default async function generateMinimapCanvas(
     },
   };
 
+  console.log("generateMinimapCanvas: options", options);
   // Generate the canvas
   const canvas = await html2canvas(elementToRender, options);
+  console.log("generateMinimapCanvas: canvas generated", canvas);
   return canvas;
 }
 
