@@ -40,7 +40,7 @@ const MinimapCanvas = (
   const [forceRedraw, setForceRedraw] = useState<boolean>(false);
   // logic to check for any queued redraws
   useEffect(() => {
-    const checkPeriod = 2 * 1000
+    const checkPeriod = 5 * 1000
     const interval = setInterval(() => {
       setCheckRedraw((old:boolean)=> !old)
     }, checkPeriod)
