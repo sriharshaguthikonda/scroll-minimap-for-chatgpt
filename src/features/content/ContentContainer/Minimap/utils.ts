@@ -138,17 +138,24 @@ function checkIgnoreMutation(mutation: MutationRecord): boolean {
  * @returns The chat container element if found, otherwise null.
  */
 export function queryChatContainer(): HTMLElement | null {
-  let mainContent: HTMLElement | null = null;
+  let firstChatMessage: HTMLElement | null = null;
+  let chatMessageContainer: HTMLElement | null = null;
+  firstChatMessage = document.querySelector(
+    '[data-testid^="conversation-turn-"]'
+  );
+  if (firstChatMessage) {
+    chatMessageContainer = firstChatMessage.parentElement;
+    return chatMessageContainer;
+  }
 
-  // Try to find the <main> element or an element with role="main"
+  // Fallback for other websites
+  let mainContent: HTMLElement | null = null;
   mainContent = document.querySelector('main, [role="main"]');
   if (mainContent) return mainContent;
 
-  // Try to find an element with ID "content" or "main"
   mainContent = document.querySelector('#content, #main');
   if (mainContent) return mainContent;
 
-  // Fallback to the body
   return document.body;
 }
 
