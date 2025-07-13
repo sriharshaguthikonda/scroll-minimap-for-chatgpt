@@ -60,33 +60,20 @@ export function createChildObserver(
   elementToObserve: HTMLElement,
   callback: CallableFunction
 ): MutationObserver {
+  // Only observe direct child changes to reduce the number of mutation events
   const mutationObserver = new MutationObserver(function (mutations) {
-    const minimapComponent = document.querySelector("#minimap-component")
-    if (!minimapComponent) return
-    mutations.forEach(function (mutation) {
-      const targetElement = mutation.target as HTMLElement;
-      if (targetElement.id === "minimap-component" || minimapComponent.contains(targetElement)) return;
-      
-      const ignoreMutation = checkIgnoreMutation(mutation)
-      if (ignoreMutation) {
-        console.log("mutation ignored!")
-        return
+    for (const mutation of mutations) {
+      if (mutation.type === "childList" && (mutation.addedNodes.length > 0 || mutation.removedNodes.length > 0)) {
+        callback();
       }
-
-      callback()
-      console.log(mutation);
-    });
+    }
   });
 
   mutationObserver.observe(elementToObserve, {
-    attributes: false,
-    characterData: false,
     childList: true,
-    subtree: true,
-    attributeOldValue: false,
-    characterDataOldValue: false,
+    subtree: false,
   });
-  return mutationObserver
+  return mutationObserver;
 }
 
 
@@ -112,23 +99,6 @@ export function createSizeObserver(
 
   resizeObserver.observe(elementToObserve);
   return resizeObserver
-}
-
-
-function checkIgnoreMutation(mutation: MutationRecord): boolean {
-  if (mutation.type !== 'childList') return false;
-
-  for (const node of [...mutation.addedNodes, ...mutation.removedNodes]) {
-    if (!(node instanceof HTMLElement)) continue;
-
-    // Check if the element is big enough
-    const rect = node.getBoundingClientRect();
-    if (rect.width < 80 || rect.height < 80) {
-      return true;
-    }
-  }
-
-  return false;
 }
 
 
